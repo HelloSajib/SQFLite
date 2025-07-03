@@ -30,21 +30,37 @@ class UserDatabase {
   }
 
   Future<void> insertUserData(User user) async {
-    await database!.insert("User", user.toJson());
+    // await database!.insert("User", user.toJson());
+    await database!.rawInsert(
+      'INSERT INTO User(name, position, phone) VALUES (?, ?, ?)',
+      [user.name, user.position,user.phone]
+    );
   }
 
   Future<List<User>> getData() async {
-    final users = await database!.query("User");
+    // final users = await database!.query("User");
+    // return users.map((data)=> User.fromJson(data)).toList();
+    final users = await database!.rawQuery(
+      'SELECT * FROM User'
+    );
     return users.map((data)=> User.fromJson(data)).toList();
   }
 
   Future<void> updateData(User user) async {
-    await database!.update(
-        "User", user.toJson(), where: "phone =?", whereArgs: [user.phone]);
+    // await database!.update(
+    //     "User", user.toJson(), where: "phone =?", whereArgs: [user.phone]);
+    await database!.rawUpdate(
+      'UPDATE User SET name = ?, position = ? WHERE phone = ?',
+      [user.name, user.position, user.phone]
+    );
   }
 
   Future<void> deleteData(int phone) async {
-    await database!.delete("User",where: "phone =?", whereArgs: [phone]);
+    //await database!.delete("User",where: "phone =?", whereArgs: [phone]);
+    await database!.rawDelete(
+      'DELETE FROM User WHERE phone = ?',
+      [phone]
+    );
   }
 
 }
